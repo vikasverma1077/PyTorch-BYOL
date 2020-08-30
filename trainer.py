@@ -8,6 +8,21 @@ from torch.utils.tensorboard import SummaryWriter
 from utils import _create_model_training_folder
 
 
+def mixup_data(x):
+
+    '''Compute the mixup data. Return mixed inputs, pairs of targets, and lambda'''
+    """
+    if alpha > 0.:
+        lam = np.random.beta(alpha, alpha)
+    else:
+        lam = 1.
+    """
+    lam = torch.FloatTensor(1,).uniform_(0.7, 1.0)
+    batch_size = x.size()[0]
+    index = torch.randperm(batch_size)
+    mixed_x = lam * x + (1 - lam) * x[index,:]
+    return mixed_x
+
 class BYOLTrainer:
     def __init__(self, online_network, target_network, predictor, optimizer, device, **params):
         self.online_network = online_network
@@ -49,15 +64,16 @@ class BYOLTrainer:
                                   num_workers=self.num_workers, drop_last=False, shuffle=True)
 
         niter = 0
-        model_checkpoints_folder = os.path.join(self.writer.log_dir, 'checkpoints')
+        model_checkpoints_folder = os.path.join('/home/vermavik/github/PyTorch-BYOL', 'checkpoints')
 
         self.initializes_target_network()
 
         for epoch_counter in range(self.max_epochs):
 
             #for (batch_view_1, batch_view_2), _ in train_loader:
-            for batch_view_1, _ in train_loader:
-                import pdb; pdb.set_trace()
+            for input, _ in train_loader:
+                batch_view_1 = mixup_data(x)
+                batch_view_2 = mixup_data(x)
                 batch_view_1 = batch_view_1.to(self.device)
                 batch_view_2 = batch_view_2.to(self.device)
 
