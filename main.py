@@ -17,11 +17,11 @@ def main():
     config = yaml.load(open("./config/config.yaml", "r"), Loader=yaml.FullLoader)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print("Training with: {device}")
+    print(f"Training with: {device}")
 
     data_transform = get_simclr_data_transforms(**config['data_transforms'])
 
-    train_dataset = datasets.STL10('/home/vermavik/PyTorch-BYOL/Downloads/', split='train+unlabeled', download=True,
+    train_dataset = datasets.STL10('/home/thalles/Downloads/', split='train+unlabeled', download=True,
                                    transform=MultiViewDataInjector([data_transform, data_transform]))
 
     # online network
