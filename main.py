@@ -18,7 +18,7 @@ def main():
     config = yaml.load(open("./config/config.yaml", "r"), Loader=yaml.FullLoader)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print("Training with: {device}")
+    print(f"Training with: {device}")
 
     data_transform = get_simclr_data_transforms(**config['data_transforms'])
 
