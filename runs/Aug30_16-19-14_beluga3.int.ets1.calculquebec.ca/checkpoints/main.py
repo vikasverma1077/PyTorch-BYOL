@@ -25,7 +25,7 @@ def main():
     #train_dataset = datasets.STL10('/home/vermavik/PyTorch-BYOL/Downloads/', split='train+unlabeled', download=True,
     #                               transform=MultiViewDataInjector([data_transform, data_transform]))
     train_dataset = datasets.STL10('/home/vermavik/PyTorch-BYOL/Downloads/NoAug', split='train+unlabeled', download=True,
-                                    transform=transforms.ToTensor())
+                                    transform=[transforms.ToTensor()])
     # online network
     online_network = ResNet18(**config['network']).to(device)
     pretrained_folder = config['network']['fine_tune_from']

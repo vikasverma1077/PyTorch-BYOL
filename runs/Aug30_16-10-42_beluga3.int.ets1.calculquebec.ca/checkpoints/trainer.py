@@ -55,8 +55,7 @@ class BYOLTrainer:
 
         for epoch_counter in range(self.max_epochs):
 
-            #for (batch_view_1, batch_view_2), _ in train_loader:
-            for batch_view_1, _ in train_loader:
+            for (batch_view_1, batch_view_2), _ in train_loader:
                 import pdb; pdb.set_trace()
                 batch_view_1 = batch_view_1.to(self.device)
                 batch_view_2 = batch_view_2.to(self.device)

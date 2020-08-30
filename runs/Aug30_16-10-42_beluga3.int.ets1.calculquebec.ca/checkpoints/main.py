@@ -3,7 +3,6 @@ import os
 import torch
 import yaml
 from torchvision import datasets
-from torchvision.transforms import transforms
 from data.multi_view_data_injector import MultiViewDataInjector
 from data.transforms import get_simclr_data_transforms
 from models.mlp_head import MLPHead
@@ -22,10 +21,9 @@ def main():
 
     data_transform = get_simclr_data_transforms(**config['data_transforms'])
 
-    #train_dataset = datasets.STL10('/home/vermavik/PyTorch-BYOL/Downloads/', split='train+unlabeled', download=True,
-    #                               transform=MultiViewDataInjector([data_transform, data_transform]))
-    train_dataset = datasets.STL10('/home/vermavik/PyTorch-BYOL/Downloads/NoAug', split='train+unlabeled', download=True,
-                                    transform=transforms.ToTensor())
+    train_dataset = datasets.STL10('/home/vermavik/PyTorch-BYOL/Downloads/', split='train+unlabeled', download=True,
+                                   transform=MultiViewDataInjector([data_transform, data_transform]))
+
     # online network
     online_network = ResNet18(**config['network']).to(device)
     pretrained_folder = config['network']['fine_tune_from']
