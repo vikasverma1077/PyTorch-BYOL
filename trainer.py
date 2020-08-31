@@ -101,8 +101,10 @@ class BYOLTrainer:
 
     def update(self, batch_view_1, batch_view_2):
         # compute query feature
-        predictions_from_view_1 = self.predictor(self.online_network(batch_view_1))
-        predictions_from_view_2 = self.predictor(self.online_network(batch_view_2))
+        #predictions_from_view_1 = self.predictor(self.online_network(batch_view_1))
+        #predictions_from_view_2 = self.predictor(self.online_network(batch_view_2))
+        predictions_from_view_1 = self.online_network(batch_view_1)
+        predictions_from_view_2 = self.online_network(batch_view_2)
 
         # compute key features
         with torch.no_grad():
