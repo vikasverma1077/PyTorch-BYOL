@@ -71,9 +71,9 @@ class BYOLTrainer:
         for epoch_counter in range(self.max_epochs):
 
             #for (batch_view_1, batch_view_2), _ in train_loader:
-            for input, _ in train_loader:
-                batch_view_1 = mixup_data(x)
-                batch_view_2 = mixup_data(x)
+            for input_x, _ in train_loader:
+                batch_view_1 = mixup_data(input_x)
+                batch_view_2 = mixup_data(input_x)
                 batch_view_1 = batch_view_1.to(self.device)
                 batch_view_2 = batch_view_2.to(self.device)
 
@@ -95,7 +95,7 @@ class BYOLTrainer:
                 niter += 1
 
             print("End of epoch {}".format(epoch_counter))
-
+            print(loss)
         # save checkpoints
         self.save_model(os.path.join(model_checkpoints_folder, 'model.pth'))
 
