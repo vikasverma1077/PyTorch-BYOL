@@ -5,7 +5,7 @@ from torchvision import transforms, datasets
 import torchvision
 import numpy as np
 import os
-from sklearn import preprocessing
+#from sklearn import preprocessing
 from torch.utils.data.dataloader import DataLoader
 
 sys.path.append('../')
@@ -16,7 +16,7 @@ batch_size = 512
 data_transforms = torchvision.transforms.Compose([transforms.ToTensor()])
 
 
-config = yaml.load(open("../config/config.yaml", "r"), Loader=yaml.FullLoader)
+config = yaml.load(open("./config/config.yaml", "r"), Loader=yaml.FullLoader)
 
 
 train_dataset = datasets.STL10('/home/vermavik/PyTorch-BYOL/Downloads/NoAug', split='train', download=False,
@@ -35,7 +35,7 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size,
 test_loader = DataLoader(test_dataset, batch_size=batch_size,
                           num_workers=0, drop_last=False, shuffle=True)
 
-device = 'cuda'# 'cpu' #'cuda' if torch.cuda.is_available() else 'cpu'
+device = 'cpu' #'cuda' if torch.cuda.is_available() else 'cpu'
 encoder = ResNet18(**config['network'])
 output_feature_dim = encoder.projetion.net[0].in_features
 
@@ -80,7 +80,6 @@ def get_features_from_encoder(encoder, loader):
     y_train = torch.tensor(y_train)
     return x_train, y_train
 
-
 encoder.eval()
 x_train, y_train = get_features_from_encoder(encoder, train_loader)
 x_test, y_test = get_features_from_encoder(encoder, test_loader)
@@ -94,7 +93,6 @@ print("Testing data shape:", x_test.shape, y_test.shape)
 
 
 def create_data_loaders_from_arrays(X_train, y_train, X_test, y_test):
-
     train = torch.utils.data.TensorDataset(X_train, y_train)
     train_loader = torch.utils.data.DataLoader(train, batch_size=64, shuffle=True)
 
@@ -102,21 +100,25 @@ def create_data_loaders_from_arrays(X_train, y_train, X_test, y_test):
     test_loader = torch.utils.data.DataLoader(test, batch_size=512, shuffle=False)
     return train_loader, test_loader
 
-
+"""
 scaler = preprocessing.StandardScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train).astype(np.float32)
 x_test = scaler.transform(x_test).astype(np.float32)
+"""
+x_mean = x_train.mean(axis=0)
+x_std = x_train.std(axis=0)
+x_train = x_train.sub_(x_mean).div_(x_std)
+x_test = x_test.sub_(x_mean).div_(x_std)
 
-
-train_loader, test_loader = create_data_loaders_from_arrays(torch.from_numpy(x_train), y_train, torch.from_numpy(x_test), y_test)
+train_loader, test_loader = create_data_loaders_from_arrays(x_train, y_train, x_test, y_test)
 
 
 optimizer = torch.optim.Adam(logreg.parameters(), lr=3e-4)
 criterion = torch.nn.CrossEntropyLoss()
 eval_every_n_epochs = 10
 
-for epoch in range(200):
+for epoch in range(1000):
 #     train_acc = []
     for x, y in train_loader:
 
@@ -148,6 +150,6 @@ for epoch in range(200):
             correct += (predictions == y).sum().item()
             
         acc = 100 * correct / total
-        print("Testing accuracy: {np.mean(acc)}")
+        print("Testing accuracy:", np.mean(acc))
 
 
